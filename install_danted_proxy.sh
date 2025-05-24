@@ -1,20 +1,20 @@
 #!/bin/bash
 
-echo "🔧 Cài đặt các công cụ biên dịch cần thiết..."
+echo "🔧 Cài đặt các công cụ cần thiết..."
 sudo dnf groupinstall "Development Tools" -y
 sudo dnf install gcc make pam-devel curl tar -y
 
-echo "📥 Tải và giải nén mã nguồn Dante..."
+echo "📥 Tải và giải nén Dante..."
 curl -O https://www.inet.no/dante/files/dante-1.4.3.tar.gz
 tar -xzf dante-1.4.3.tar.gz
 cd dante-1.4.3
 
-echo "⚙️ Tiến hành biên dịch Dante..."
+echo "⚙️ Biên dịch Dante..."
 ./configure
 make
 sudo make install
 
-echo "📝 Tạo file cấu hình /etc/danted.conf..."
+echo "📝 Tạo file cấu hình /etc/danted.conf với interface enX0..."
 cat <<EOF | sudo tee /etc/danted.conf
 logoutput: /var/log/danted.log
 
@@ -48,20 +48,22 @@ After=network.target
 
 [Service]
 ExecStart=/usr/local/sbin/danted -f /etc/danted.conf
-ExecReload=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP \$MAINPID
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-echo "🚀 Khởi động dịch vụ Dante SOCKS5..."
+echo "🚀 Khởi động Dante..."
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable danted
 sudo systemctl start danted
 
+echo "📌 Nhớ mở cổng 1080 trong AWS Security Group!"
 
-echo "📌 Nhớ mở cổng 1080 trong AWS Security Group nếu chưa mở!"
+
+
 echo "✅ Hoàn tất! Mỗi lần reg được proxy thì cảm ơn Thái đẹp zai 1 tiếng nhé !"
 
