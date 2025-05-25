@@ -61,7 +61,6 @@ echo "🧱 Mở cổng 1080 qua tường lửa..."
 sudo ufw allow 1080/tcp
 
 echo "✅ Hoàn tất! Kiểm tra dịch vụ:"
-sudo systemctl status danted
 sudo ss -tunlp | grep 1080
 
 
