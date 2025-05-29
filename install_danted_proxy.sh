@@ -15,13 +15,25 @@ sudo ./configure
 sudo make
 sudo make install
 
+# === Tạo user binmvt với pass KhongCoTien ===
+PROXY_USER="hongthai"
+PROXY_PASS="proxypro"
+
+echo "👤 Tạo user $PROXY_USER ..."
+sudo useradd -m "$PROXY_USER"
+echo "$PROXY_USER:$PROXY_PASS" | sudo chpasswd
+
+# === Lấy interface thật của máy ===
+NET_IFACE=$(ip -o -4 route show to default | awk '{print $5}')
+echo "🌐 Interface sử dụng: $NET_IFACE"
+
 echo "📁 Tạo file cấu hình /etc/danted.conf..."
 cat <<EOF | sudo tee /etc/danted.conf
 logoutput: syslog
-internal: enX0 port = 1080
-external: enX0
+internal: $NET_IFACE port = 443
+external: $NET_IFACE
 
-method: username none
+method: username
 user.notprivileged: nobody
 
 client pass {
@@ -33,10 +45,11 @@ pass {
     from: 0.0.0.0/0 to: 0.0.0.0/0
     protocol: tcp udp
     log: connect disconnect error
+    method: username
 }
 EOF
 
-echo "⚙️ Tạo service systemd /etc/systemd/system/danted.service..."
+echo "⚙️ Tạo systemd service cho Dante..."
 cat <<EOF | sudo tee /etc/systemd/system/danted.service
 [Unit]
 Description=Dante SOCKS proxy daemon
@@ -51,7 +64,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
-echo "🔄 Reload systemd và khởi động dịch vụ..."
+echo "🔄 Khởi động lại dịch vụ Dante..."
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable danted
@@ -60,11 +73,8 @@ sudo systemctl restart danted
 echo "🧱 Mở cổng 1080 qua tường lửa..."
 sudo ufw allow 1080/tcp
 
-echo "✅ Hoàn tất! Kiểm tra dịch vụ:"
-sudo ss -tunlp | grep 1080
-
-
-
-
-echo "✅ Hoàn tất! Mỗi lần reg được proxy thì cảm ơn Thái đẹp zai 1 tiếng nhé !"
-
+# === In kết quả cuối cùng ===
+IP_ADDR=$(curl -s ifconfig.me)
+echo "✅ SOCKS5 proxy đã sẵn sàng!"
+echo "🔗 Proxy: $IP_ADDR:443:hongthai:proxypro"
+echo "👉 Mỗi lần reg được proxy thì cảm ơn Thái đẹp zai 1 tiếng nhé 😎"
