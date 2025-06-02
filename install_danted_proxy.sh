@@ -16,7 +16,7 @@ sudo make
 sudo make install
 
 # === Tạo user binmvt với pass KhongCoTien ===
-PROXY_USER="hongthai"
+PROXY_USER="AWS_HongThai"
 PROXY_PASS="proxypro"
 
 echo "👤 Tạo user $PROXY_USER ..."
@@ -76,5 +76,5 @@ sudo ufw allow 443/tcp
 # === In kết quả cuối cùng ===
 IP_ADDR=$(curl -s ifconfig.me)
 echo "✅ SOCKS5 proxy đã sẵn sàng!"
-echo "🔗 Proxy: $IP_ADDR:443:hongthai:proxypro"
+echo "🔗 Proxy: $IP_ADDR:443:AWS_HongThai:proxypro"
 echo "👉 Mỗi lần reg được proxy thì cảm ơn Thái đẹp zai 1 tiếng nhé 😎"
