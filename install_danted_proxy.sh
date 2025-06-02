@@ -70,8 +70,8 @@ sudo systemctl daemon-reload
 sudo systemctl enable danted
 sudo systemctl restart danted
 
-echo "🧱 Mở cổng 1080 qua tường lửa..."
-sudo ufw allow 1080/tcp
+echo "🧱 Mở cổng 443 qua tường lửa..."
+sudo ufw allow 443/tcp
 
 # === In kết quả cuối cùng ===
 IP_ADDR=$(curl -s ifconfig.me)
